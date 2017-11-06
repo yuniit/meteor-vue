@@ -12,6 +12,7 @@ Meteor.methods({
         return Customer.findOne({ _id: _id });
     },
     insertCustomer(data) {
+        Meteor._sleepForMs(1000)
         return Customer.insert(data);
     },
     updateCustomer(data) {
