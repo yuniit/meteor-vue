@@ -22,38 +22,27 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-button type="primary" v-loading="loadButton" @click="handleAddCustomer()" style="margin-left:120px;">Add</el-button>
+                    <el-button type="primary" v-loading="loadAddButton" @click="handleAddCustomer()" style="margin-left:120px;">Add</el-button>
                 </el-form>
             </el-col>
         </el-row>
         <!-- End Form -->
 
-        <el-row :gutter="20">
-            <el-col :span="20" :offset="2">
-                <el-card class="box-card" style="margin-top :30px;max-height:350px;overflow-y:scroll">
-                    <div slot="header" class="clearfix">
-                        <p style="text-align:center;margin:0;font-size:23px;text-decoration:underline">Customers List</p>
-                    </div>
-                    <div v-for="item in cusListOption" :key="item._id" :value="item._id" class="text item">
-                        <el-row :gutter="20">
-                            <el-col :span="8">
-                                <p>
-                                    <u style="color:#616161">Customer Name:</u> &nbsp&nbsp;&nbsp;&nbsp;{{ item.name }}
-                                </p>
-                            </el-col>
-                            <el-col :span="8">
-                                <p>
-                                    <u style="color:#616161">Customer Gender:</u> &nbsp;&nbsp;&nbsp;&nbsp;{{ item.gender }}
-                                </p>
-                            </el-col>
-                            <el-col :span="8">
-                                <p>
-                                    <u style="color:#616161">Customer Telephone:</u> &nbsp;&nbsp;&nbsp;&nbsp;{{ item.tel }}
-                                </p>
-                            </el-col>
-                        </el-row>
-                    </div>
-                </el-card>
+        <el-row :gutter="20" style="margin-top:30px;">
+            <el-col :span="13" :offset="5">
+                <el-table v-loading="loadingTable" element-loading-text="Loading..." element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :data="cusData" border style="width: 100%;">
+                    <el-table-column label="Customer name" prop="name" width="200">
+                    </el-table-column>
+                    <el-table-column label="Customer gender" prop="gender" width="190">
+                    </el-table-column>
+                    <el-table-column label="Customer tel" prop="tel" width="200">
+                    </el-table-column>
+                    <el-table-column label="Remove" width="105">
+                        <template scope="scope">
+                            <el-button type="danger" :plain="true" size="small" @click="removeCus(scope.row)">Remove</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </el-col>
         </el-row>
     </div>
@@ -66,6 +55,7 @@ export default {
     name: 'app',
     data() {
         return {
+            cusData: [],
             cusForm: {
                 name: '',
                 gender: '',
@@ -92,8 +82,8 @@ export default {
                     value: 'Female'
                 }
             ],
-            cusListOption: [],
-            loadButton: false,
+            loadAddButton: false,
+            loadingTable: false,
         }
     },
     created() {
@@ -108,11 +98,11 @@ export default {
             }
             this.$refs.cusForm.validate((val) => {
                 if (val) {
-                    this.loadButton = true;
+                    this.loadAddButton = true;
                     Meteor.call('insertCustomer', data, (err, res) => {
                         if (!err) {
                             this.$message.success({ message: 'Customer add complete !' });
-                            this.loadButton = false;
+                            this.loadAddButton = false;
                             this.callCustomer();
                             this.resetCusForm();
                         }
@@ -129,9 +119,29 @@ export default {
         callCustomer() {
             Meteor.call('findCustomers', (err, res) => {
                 if (!err) {
-                    return this.cusListOption = res;
+                    return this.cusData = res;
                 }
             })
+        },
+        removeCus(row) {
+            this.$confirm('Are you sure to delete this one ?', 'Warning', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning'
+            })
+                .then(() => {
+                    this.loadingTable = true;
+                    Meteor.call('removeCustomer', row._id, (err, res) => {
+                        if (!err) {
+                            this.callCustomer();
+                            this.loadingTable = false;
+                            this.$message.success({ message: 'Remove done !!' })
+                        }
+                    })
+                })
+                .catch(() => {
+                    this.$message.warning({ message: 'Remove cancel !!', duration: '1800' })
+                })
         },
         resetCusForm() {
             this.$refs.cusForm.resetFields();
@@ -140,19 +150,5 @@ export default {
 }
 </script>
 <style scope="scope">
-.clearfix:before,
-.clearfix:after {
-    display: table;
-    content: "";
-}
 
-.clearfix:after {
-    clear: both
-}
-
-
-.el-card__body {
-    padding-top: 0px;
-    padding-bottom: 0px;
-}
 </style>

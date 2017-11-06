@@ -19,6 +19,7 @@ Meteor.methods({
         return Customer.update(data);
     },
     removeCustomer(_id) {
+        Meteor._sleepForMs(1000);
         return Customer.remove({ _id: _id });
     },
 })
