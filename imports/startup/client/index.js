@@ -10,6 +10,8 @@ import lang from 'element-ui/lib/locale/lang/en';
 import locale from 'element-ui/lib/locale';
 locale.use(lang);
 
+import numeral from 'numeral';
+
 import VueMeteorTracker from 'vue-meteor-tracker';
 Vue.use(VueMeteorTracker);
 
