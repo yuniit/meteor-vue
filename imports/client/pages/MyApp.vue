@@ -88,7 +88,9 @@
             </el-col>
         </el-row>
         <hr>
+        <!-- End Item Table -->
 
+        <!-- Start Sale Form -->
         <h1 style="text-align:center">Sale Form</h1>
         <el-row :gutter="20" style="margin-bottom:20px">
             <el-col :span="12" :offset="6">
@@ -136,6 +138,9 @@
                 </el-form>
             </el-col>
         </el-row>
+        <!-- End Sale Form -->
+
+        <!-- Start Sale Table -->
         <el-row :gutter="20" style="margin-bottom:30px;">
             <el-col :span="18" :offset="3">
                 <el-table :data="saleData" border v-loading="loadingSaleTable">
@@ -159,6 +164,7 @@
                 </el-table>
             </el-col>
         </el-row>
+        <!-- End Sale Form -->
     </div>
 </template>
 
